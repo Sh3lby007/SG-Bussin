@@ -1,1 +1,1 @@
-{"name":"shelbus schedule","short_name":"shelbus","start_url":"/","display":"standalone","background_color":"#ffffff","lang":"en","scope":"/vue-bus/","descripion":"Simple bus schedule app","icons":[{"src":"../assets/icons/bus.png","type":"image/png","sizes":"512x512"}]}
+{"name":"shelbus schedule","short_name":"shelbus","start_url":"/","display":"standalone","background_color":"#ffffff","lang":"en","scope":"/vue-bus/","description":"Simple bus schedule app","icons":[{"src":"../assets/icons/bus.png","type":"image/png","sizes":"512x512"}]}
