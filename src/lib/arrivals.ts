@@ -29,8 +29,6 @@ export interface ServiceArrivals {
 const LTA_URL = import.meta.env.VITE_ARRIVALS_URL || (__LTA_DEV_PROXY__ ? "/api/arrivals" : "");
 const FALLBACK_URL = "https://arrivelah2.busrouter.sg/";
 
-export const arrivalsSource = LTA_URL ? "LTA DataMall" : "arrivelah (community)";
-
 // --- LTA DataMall ---------------------------------------------------------
 
 interface LtaNextBus {

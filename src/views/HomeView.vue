@@ -6,7 +6,6 @@ import { useTransitData } from "@/composables/useTransitData";
 import { useNearbyStops } from "@/composables/useNearbyStops";
 import { useNow } from "@/composables/useNow";
 import { formatDistance } from "@/lib/format";
-import { arrivalsSource } from "@/lib/arrivals";
 import PinnedServiceCard from "@/components/PinnedServiceCard.vue";
 import StopRow from "@/components/StopRow.vue";
 import EmptyState from "@/components/EmptyState.vue";
@@ -18,11 +17,6 @@ const logoUrl = `${import.meta.env.BASE_URL}icons/bus.svg`;
 const now = useNow();
 
 const hasFavourites = computed(() => favourites.stopCodes.length > 0 || favourites.services.length > 0);
-const dataDate = computed(() =>
-  data.value
-    ? new Date(data.value.meta.updatedAt).toLocaleDateString("en-SG", { day: "numeric", month: "short", year: "numeric" })
-    : null,
-);
 </script>
 
 <template>
@@ -126,10 +120,6 @@ const dataDate = computed(() =>
     </section>
 
 
-    <footer class="footer">
-      <p v-if="dataDate">Stops &amp; routes updated {{ dataDate }} · {{ data?.meta.stops.toLocaleString() }} stops</p>
-      <p>Arrivals from {{ arrivalsSource }}</p>
-    </footer>
   </main>
 </template>
 
@@ -200,10 +190,4 @@ const dataDate = computed(() =>
   cursor: progress;
 }
 
-.footer {
-  margin-top: 40px;
-  text-align: center;
-  font-size: 0.75rem;
-  color: var(--text-faint);
-}
 </style>

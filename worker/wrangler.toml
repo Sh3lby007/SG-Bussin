@@ -6,5 +6,4 @@ compatibility_date = "2026-10-01"
 
 [vars]
 # Comma-separated list of sites allowed to call this worker, or "*" for any.
-# Example: "https://sh3lby007.github.io,http://localhost:8080"
-ALLOWED_ORIGINS = "*"
+ALLOWED_ORIGINS = "https://sh3lby007.github.io,http://localhost:8080"
