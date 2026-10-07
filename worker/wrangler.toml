@@ -1,0 +1,10 @@
+# Cloudflare Worker that proxies LTA DataMall's Bus Arrival API.
+# Deploy: npx wrangler secret put LTA_ACCOUNT_KEY && npx wrangler deploy
+name = "sg-bussin-api"
+main = "index.js"
+compatibility_date = "2026-10-01"
+
+[vars]
+# Comma-separated list of sites allowed to call this worker, or "*" for any.
+# Example: "https://sh3lby007.github.io,http://localhost:8080"
+ALLOWED_ORIGINS = "*"

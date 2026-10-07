@@ -1,26 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8">
-
-   <!-- Prevent user from zooming in/out when installed as a PWA to make it feel more like a native app. -->
-   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-  <link rel="icon" href="/src/assets/icons/bus-192.png">
-  <link rel="apple-touch-icon" href="/src/assets/icons/bus-192.png">
-  <link rel="mask-icon" href="/src/assets/icons/bus-192.png" type="image/x-icon">
-  <meta name="author" content="Shelby">
-  <meta name="title" content="Bus Schedule">
-  <meta name="theme-color" content="#ffffff">
-  <meta name="description" content="Bussin Bus Arrival App">
-  <title>SG Bussin</title>
-
-</head>
-
-<body>
-  <div id="app"></div>
-  <script type="module" src="/src/main.ts"></script>
-</body>
-
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="Live Singapore bus arrival times" />
+    <meta name="theme-color" content="#0f7a47" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0e1113" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="./icons/bus.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./icons/bus-192.png" />
+    <title>SG Bussin</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
 </html>
