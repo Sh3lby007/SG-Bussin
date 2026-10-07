@@ -1,0 +1,52 @@
+name: Update bus data
+
+on:
+  schedule:
+    # Every Monday 03:17 Singapore time (19:17 UTC Sunday).
+    - cron: "17 19 * * 0"
+  workflow_dispatch:
+
+concurrency:
+  group: update-data
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      changed: ${{ steps.commit.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Fetch stops, services and routes from LTA DataMall
+        run: node scripts/fetch-lta-data.mjs
+        env:
+          LTA_ACCOUNT_KEY: ${{ secrets.LTA_ACCOUNT_KEY }}
+
+      - name: Commit changes
+        id: commit
+        run: |
+          if [ -z "$(git status --porcelain -- public/data)" ]; then
+            echo "Bus data unchanged."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data
+          git commit -m "chore(data): update bus stops and routes from LTA DataMall"
+          git push
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    needs: update
+    if: needs.update.outputs.changed == 'true'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/deploy.yml

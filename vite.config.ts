@@ -1,49 +1,70 @@
 import { fileURLToPath, URL } from "node:url";
 
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import vue from "@vitejs/plugin-vue";
 import { VitePWA } from "vite-plugin-pwa";
-import basicSSL from "@vitejs/plugin-basic-ssl";
 
-// https://vitejs.dev/config/#conditional-config
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ command, mode }) => {
+  // Not VITE_-prefixed on purpose: the key stays on the dev server and never reaches the bundle.
+  const { LTA_ACCOUNT_KEY } = loadEnv(mode, process.cwd(), "");
+  const devProxy = command === "serve" && Boolean(LTA_ACCOUNT_KEY);
+
   return {
+    // Relative base + hash routing lets the same build run at / or at GitHub Pages' /<repo>/.
+    base: "./",
+
+    define: {
+      __LTA_DEV_PROXY__: JSON.stringify(devProxy),
+    },
+
+    server: devProxy
+      ? {
+          proxy: {
+            "/api/arrivals": {
+              target: "https://datamall2.mytransport.sg",
+              changeOrigin: true,
+              headers: { AccountKey: LTA_ACCOUNT_KEY! },
+              rewrite: (path) =>
+                path.replace(/^\/api\/arrivals\?code=/, "/ltaodataservice/v3/BusArrival?BusStopCode="),
+            },
+          },
+        }
+      : undefined,
+
     plugins: [
       vue(),
-
-      //Plugin for PWA usage
       VitePWA({
         registerType: "autoUpdate",
-        injectRegister: "auto",
-
-        // Manifest JSON
+        includeAssets: ["icons/*.png", "icons/*.svg"],
         manifest: {
           name: "SG Bussin",
           short_name: "Bussin",
-          description: "Bussin Bus Arrival App",
-          start_url: "/SG-Bussin/",
-          theme_color: "#ffffff",
+          description: "Live Singapore bus arrival times",
+          start_url: ".",
+          scope: ".",
           display: "standalone",
-          // Smaller icon as launcher icon, larger icon for app switch.
+          background_color: "#f4f5f0",
+          theme_color: "#0f7a47",
           icons: [
-            // One full stop to reference a file in the same directory. Two full stop if we reference a file from the parent directory
+            { src: "icons/bus-192.png", sizes: "192x192", type: "image/png" },
+            { src: "icons/bus-512.png", sizes: "512x512", type: "image/png" },
+            { src: "icons/bus-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+          ],
+        },
+        workbox: {
+          globPatterns: ["**/*.{js,css,html,woff2,png,svg}"],
+          // Stop names are Latin script; other Inter subsets are only fetched if ever needed.
+          globIgnores: ["**/inter-{cyrillic,greek,vietnamese}*"],
+          runtimeCaching: [
             {
-              src: "./assets/icons/bus-192.png",
-              type: "image/png",
-              sizes: "192x192",
-              purpose: "maskable",
+              // Bus stop / route data: serve the cached copy instantly, refresh it in the background.
+              urlPattern: ({ url }) => url.pathname.includes("/data/") && url.pathname.endsWith(".json"),
+              handler: "StaleWhileRevalidate",
+              options: { cacheName: "bus-data" },
             },
           ],
         },
       }),
-      // vueI18n({
-      //   include: resolve(dirname(fileURLToPath(import.meta.url)), "../locales"),
-      // }),
-
-      // Enable https by default
-      // https://vitejs.dev/config/server-options.html#server-https
-      // https://vitejs.dev/guide/migration.html#automatic-https-certificate-generation
-      basicSSL(),
     ],
 
     resolve: {
@@ -51,10 +72,5 @@ export default defineConfig(({ mode }) => {
         "@": fileURLToPath(new URL("./src", import.meta.url)),
       },
     },
-
-    // When deploying to Github pages, the base URL will be your repo's name,
-    // Thus the production base URL must be changed here for it to work when deployed.
-    // Ref: https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site#next-steps
-    base: mode === "github-pages" ? "/SG-Bussin/" : "/",
   };
 });

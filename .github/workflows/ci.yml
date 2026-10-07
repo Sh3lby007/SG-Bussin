@@ -1,0 +1,19 @@
+name: CI
+
+on:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Type-check and build
+        run: npm run build
+      - name: Check bus data files parse
+        run: node -e "for (const f of ['stops','services','meta']) JSON.parse(require('fs').readFileSync('public/data/' + f + '.json', 'utf8'))"
